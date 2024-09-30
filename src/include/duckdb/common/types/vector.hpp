@@ -76,6 +76,7 @@ struct ConsecutiveChildListInfo {
 
 //! Vector of values of a specified PhysicalType.
 class Vector {
+	//- 这些 Vector 自身不存储数据，而是对特定类型(vector_type)的访问API, 如果使用 rust enum 会更直接一些。
 	friend struct ConstantVector;
 	friend struct DictionaryVector;
 	friend struct FlatVector;
@@ -93,6 +94,9 @@ class Vector {
 public:
 	//! Create a vector that references the other vector
 	DUCKDB_API Vector(Vector &other);
+
+	//- 如果 other 为 FLAT_VECTOR, this 会采用 DICTIONARY_VECTOR, 引用到 other 向量。两个向量保持 attach。
+	//- 这类基于类似于复制构造，对两个 vector 的操作是否会互相影响？MARK
 	//! Create a vector that slices another vector
 	DUCKDB_API explicit Vector(const Vector &other, const SelectionVector &sel, idx_t count);
 	//! Create a vector that slices another vector between a pair of offsets
@@ -248,7 +252,7 @@ protected:
 	//! A pointer to the data.
 	data_ptr_t data;
 	//! The validity mask of the vector
-	ValidityMask validity;
+	ValidityMask validity; //- mask a value in vector as null.
 	//! The main buffer holding the data of the vector
 	buffer_ptr<VectorBuffer> buffer;
 	//! The buffer holding auxiliary data of the vector

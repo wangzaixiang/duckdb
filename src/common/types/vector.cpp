@@ -143,6 +143,9 @@ void Vector::ReferenceAndSetType(const Vector &other) {
 	Reference(other);
 }
 
+//- 与 other 共享 buffer & auxiliary
+//- Vector 的 data 自身是不管理内存的生成周期的，其由 buffer 管理， 两个 Vector 共享 buffer 的话，
+//- 对一个的修改，也会影响到另外一个，这个是否符合预期？MARK
 void Vector::Reinterpret(const Vector &other) {
 	vector_type = other.vector_type;
 #ifdef DEBUG
